@@ -1,0 +1,104 @@
+
+#include <iostream>
+#include <fstream> // For file input and output
+#include <vector> // Input file is stored in a vector
+#include <cassert> // For the assert statement used to validate file open
+#include <cctype> // Allows using the tolower() function
+#include <ctime> // Timer functions
+/*
+#include <iomanip>
+#include <cstdlib> // for malloc()
+#include <ctime>      // For time functions
+#include <math.h>     // For pow()
+ #include <stdio.h>
+*/
+using namespace std;
+
+void readsData(int option,vector<string> divyBikesSample, vector<string> divyBikesAll){
+
+    ifstream inStream;  // Declare an input stream for reading
+    if(option==1){
+        inStream.open("divysampledata.csv");  // Open dictionary words file
+    }else if(option==2){
+        inStream.open("weekdayweekend.csv");  // Open dictionary words file
+    }else if(option==3){
+        inStream.open("all_divy_rides_september.csv");  // Open dictionary words file
+    }
+    assert( inStream.fail() == false);   // Ensure file open worked
+
+    string newWord;  // Store a single input word
+    while ( inStream >> newWord){   //While there is another word to be read
+        if(option==1){
+            divyBikesSample.push_back(newWord);    // add word to vector 
+        }else if(option==2){
+            divyBikesAll.push_back(newWord);
+        }else if(option==3){
+            divyBikesSeptember.push_back(newWord);
+        }
+    }
+
+    inStream.close(); // Close the dictionary words file
+}
+
+void readAndClean(vector<string> divyBikesAll, vector<string> divyBikesSample){
+    int option = 0;
+        cout << "Select datafile:\n   1. Small subset of data with 14 rides to help create your program\n"
+            "   2. Week day vs weekend rides\n   3. All September 2021 data (not tested in Zybooks)\n"
+            "Your selection--> ";
+        cin >> option;
+        readsData(option, divyBikesSample, divyBikesAll);
+             
+}
+
+void displayTripData(){
+
+}
+
+void displayMembers(){
+
+}
+
+void displayWeekUsage(){
+
+}
+
+void findClosestStation(){
+
+}
+
+int main()
+{
+    vector<string> divyBikesSample;
+    vector<string> divyBikesAll;
+
+    int i, option, number;
+    i = number = option = 0;
+    cout << "Analyze Divvy bike ride information using September "
+            "trip data.\nFirst select option 1 to read and clean the data.\n\n";
+    while(option!=6){
+        cout << "Select a menu option:\n   1. Select datafile, display"
+                "rides totals and clean data\n   2. Display overall trip information\n   3. Display percentage"
+                " of members vs. casual riders\n   4. Display weekday vs weekend usage\n   5. Extra Credit:"
+                " find closest station\n   6. Exit\nYour choice --> ";
+        cin >> option;
+
+        if(option!=1 && number==0){
+            cout << "First read in data by selecting menu option 1\n" << endl;
+            continue;
+        }
+
+        switch(option){
+            case 1: readAndClean(divyBikesAll, divyBikesSample);
+                number = 1;
+                break;
+            case 2: displayTripData();
+                break;
+            case 3: displayMembers();
+                break;
+            case 4: displayWeekUsage();
+                break;
+            case 5: findClosestStation();
+                break;
+        }
+    }
+}
