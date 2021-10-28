@@ -30,7 +30,13 @@ class DivyData{
         DivyData();
         void setUpStrings(string ID, string type, string tS, string tE, string LocS, string LocE, string member);
         void setUpDoubles(double LatS, double LongS, double LatE, double LongE);
+        void printTrial();
 };
+
+void DivyData::printTrial() {
+    cout << this->bikeNumber << " " << this->membership << endl;
+}
+
 DivyData::DivyData(){
     this->bikeNumber = "NoName";
     this->typeOfBike = "None";
@@ -62,33 +68,47 @@ void DivyData::setUpDoubles(double LatS, double LongS, double LatE, double LongE
     this->LongitutdeEnd = LongE;
 }
 
-void fixLine(string Line){
-
-    int start, end;
-    start = end = 0;
+void fixLine(string Line, DivyData &bike){
+    DivyData currentBike;
+    int end;
+    string ID, type, tS, tE, LocS, LocE, member, conversion;
+    double LatS, LongS, LatE, LongE;
 
     for(int i=0; i<Line.size(); i++){
         if(Line.at(i)==',' && Line.at(i+1)==','){
             return;
+        }else if(Line.at(0)=='r'){
+            return;
         }
     }
-    string ID, type, tS, tE, LocS, LocE, member;
-    double LatS, LongS, LatE, LongE;
-    end = Line.find(',');
-    ID = Line.substr(start, end);
-    end = start;
-    end = Line.find((end+1), ',');
-    type = Line.substr(start, end);
-    cout << type << endl;
+    for(int j=0; j<11; j++){
+        end = Line.find(',');
 
+        switch(j){
+            case 0: ID = Line.substr(0, end); Line.erase(0, end+1); break;
+            case 1: type = Line.substr(0, end); Line.erase(0, end+1); break;
+            case 2: tS = Line.substr(0, end); Line.erase(0, end+1); break;
+            case 3: tE = Line.substr(0, end); Line.erase(0, end+1); break;
+            case 4: LocS = Line.substr(0, end); Line.erase(0, end+1); break;
+            case 5: LocE = Line.substr(0, end); Line.erase(0, end+1); break;
+            case 6: conversion = Line.substr(0, end); Line.erase(0, end+1); LatS = stod(conversion); break;
+            case 7: conversion = Line.substr(0, end); Line.erase(0, end+1); LongS = stod(conversion); break;
+            case 8: conversion = Line.substr(0, end); Line.erase(0, end+1); LatE = stod(conversion); break;
+            case 9: conversion = Line.substr(0, end); Line.erase(0, end+1); LongE = stod(conversion); break;
+            case 10: member = Line.substr(0, end); Line.erase(0, end+1); break;
+        }end = Line.find((end+1), ',');
+    }currentBike.setUpStrings(ID, type, tS, tE, LocS, LocE, member);
+    currentBike.setUpDoubles(LatS, LongS, LatE, LongS, LongE);
 
 }
 
 void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes){
+    DivyData bike;
+    DivyData curr;
     int option = 0;
         cout << "Select datafile:\n   1. Small subset of data with 14 rides to help create your program\n"
             "   2. Week day vs weekend rides\n   3. All September 2021 data (not tested in Zybooks)\n"
-            "Your selection--> ";
+            "Your selection-->";
         cin >> option;
 
         ifstream inStream;  // Declare an input stream for reading
@@ -104,16 +124,17 @@ void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikes
         string line;
 
         while ( getline(inStream, line)){   //While there is another word to be read
-            fixLine(line);
+            fixLine(line, bike);
             if(option==1){
-
+                divyBikesSample.push_back(bike);
             }else if(option==2){
+                divyBikesAll.push_back(bike);
             }else if(option==3){
+                SeptemberBikes.push_back(bike);
             }
-        }
-
-        inStream.close(); // Close the dictionary words file
-
+        }inStream.close(); // Close the dictionary words file
+        curr = divyBikesSample.at(0);
+        curr.printTrial();
 }
 
 void displayTripData(){
@@ -147,7 +168,7 @@ int main()
         cout << "Select a menu option:\n   1. Select datafile, display"
                 "rides totals and clean data\n   2. Display overall trip information\n   3. Display percentage"
                 " of members vs. casual riders\n   4. Display weekday vs weekend usage\n   5. Extra Credit:"
-                " find closest station\n   6. Exit\nYour choice --> ";
+                " find closest station\n   6. Exit\nYour choice -->";
         cin >> option;
 
         if(option!=1 && number==0){
