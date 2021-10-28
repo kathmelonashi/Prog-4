@@ -64,16 +64,23 @@ void DivyData::setUpDoubles(double LatS, double LongS, double LatE, double LongE
 
 void fixLine(string Line){
 
-    int comma2;
-    for(int i=0; i<Line.size(); i++){
-        if(Line.at(i)==','){
+    int start, end;
+    start = end = 0;
 
+    for(int i=0; i<Line.size(); i++){
+        if(Line.at(i)==',' && Line.at(i+1)==','){
+            return;
         }
     }
     string ID, type, tS, tE, LocS, LocE, member;
     double LatS, LongS, LatE, LongE;
-    comma2 = Line.find(',');
-    ID = Line.substr(0, comma2);
+    end = Line.find(',');
+    ID = Line.substr(start, end);
+    end = start;
+    end = Line.find((end+1), ',');
+    type = Line.substr(start, end);
+    cout << type << endl;
+
 
 }
 
@@ -86,11 +93,11 @@ void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikes
 
         ifstream inStream;  // Declare an input stream for reading
         if(option==1){
-            inStream.open("divysampledata.csv");  // Open dictionary words file
+            inStream.open("divvyridesampledata.csv");  // Open dictionary words file
         }else if(option==2){
             inStream.open("weekdayweekend.csv");  // Open dictionary words file
         }else if(option==3){
-            inStream.open("all_divy_rides_september.csv");  // Open dictionary words file
+            inStream.open("all_divvy_rides_september.csv");  // Open dictionary words file
         }
         assert( inStream.fail() == false);   // Ensure file open worked
 
