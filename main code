@@ -3,8 +3,7 @@
 #include <fstream> // For file input and output
 #include <vector> // Input file is stored in a vector
 #include <cassert> // For the assert statement used to validate file open
-#include <cctype> // Allows using the tolower() function
-#include <ctime> // Timer functions
+#include <string>
 /*
 #include <iomanip>
 #include <cstdlib> // for malloc()
@@ -14,40 +13,100 @@
 */
 using namespace std;
 
-void readsData(int option,vector<string> divyBikesSample, vector<string> divyBikesAll){
-
-    ifstream inStream;  // Declare an input stream for reading
-    if(option==1){
-        inStream.open("divysampledata.csv");  // Open dictionary words file
-    }else if(option==2){
-        inStream.open("weekdayweekend.csv");  // Open dictionary words file
-    }else if(option==3){
-        inStream.open("all_divy_rides_september.csv");  // Open dictionary words file
-    }
-    assert( inStream.fail() == false);   // Ensure file open worked
-
-    string newWord;  // Store a single input word
-    while ( inStream >> newWord){   //While there is another word to be read
-        if(option==1){
-            divyBikesSample.push_back(newWord);    // add word to vector 
-        }else if(option==2){
-            divyBikesAll.push_back(newWord);
-        }else if(option==3){
-            divyBikesSeptember.push_back(newWord);
-        }
-    }
-
-    inStream.close(); // Close the dictionary words file
+class DivyData{
+    private:
+        string bikeNumber;
+        string typeOfBike;
+        string timeStart;
+        string timeEnd;
+        string locStart;
+        string locEnd;
+        double LatitudeStart;
+        double LongitutdeStart;
+        double LatitudEnd;
+        double LongitutdeEnd;
+        string membership;
+    public:
+        DivyData();
+        void setUpStrings(string ID, string type, string tS, string tE, string LocS, string LocE, string member);
+        void setUpDoubles(double LatS, double LongS, double LatE, double LongE);
+};
+DivyData::DivyData(){
+    this->bikeNumber = "NoName";
+    this->typeOfBike = "None";
+    this->timeStart = "0/0/0 00:00";
+    this->timeEnd = "1/1/1 11:11";
+    this->locStart = "UIC";
+    this->locEnd = "UIC";
+    this->LatitudeStart = 00.00000;
+    this->LongitutdeStart = 00.00000;
+    this->LatitudEnd = 00.000000;
+    this->LongitutdeEnd = 00.00000;
+    this->membership = "None";
 }
 
-void readAndClean(vector<string> divyBikesAll, vector<string> divyBikesSample){
+void DivyData::setUpStrings(string ID, string type, string tS, string tE, string LocS, string LocE, string member) {
+    this->bikeNumber = ID;
+    this->typeOfBike = type;
+    this->timeStart = tS;
+    this->timeEnd = tE;
+    this->locStart = LocS;
+    this->locEnd = LocE;
+    this->membership = member;
+}
+
+void DivyData::setUpDoubles(double LatS, double LongS, double LatE, double LongE) {
+    this->LatitudeStart = LatS;
+    this->LongitutdeStart = LongS;
+    this->LatitudEnd = LatE;
+    this->LongitutdeEnd = LongE;
+}
+
+void fixLine(string Line){
+
+    int comma2;
+    for(int i=0; i<Line.size(); i++){
+        if(Line.at(i)==','){
+
+        }
+    }
+    string ID, type, tS, tE, LocS, LocE, member;
+    double LatS, LongS, LatE, LongE;
+    comma2 = Line.find(',');
+    ID = Line.substr(0, comma2);
+
+}
+
+void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes){
     int option = 0;
         cout << "Select datafile:\n   1. Small subset of data with 14 rides to help create your program\n"
             "   2. Week day vs weekend rides\n   3. All September 2021 data (not tested in Zybooks)\n"
             "Your selection--> ";
         cin >> option;
-        readsData(option, divyBikesSample, divyBikesAll);
-             
+
+        ifstream inStream;  // Declare an input stream for reading
+        if(option==1){
+            inStream.open("divysampledata.csv");  // Open dictionary words file
+        }else if(option==2){
+            inStream.open("weekdayweekend.csv");  // Open dictionary words file
+        }else if(option==3){
+            inStream.open("all_divy_rides_september.csv");  // Open dictionary words file
+        }
+        assert( inStream.fail() == false);   // Ensure file open worked
+
+        string line;
+
+        while ( getline(inStream, line)){   //While there is another word to be read
+            fixLine(line);
+            if(option==1){
+
+            }else if(option==2){
+            }else if(option==3){
+            }
+        }
+
+        inStream.close(); // Close the dictionary words file
+
 }
 
 void displayTripData(){
@@ -68,10 +127,12 @@ void findClosestStation(){
 
 int main()
 {
-    vector<string> divyBikesSample;
-    vector<string> divyBikesAll;
+    vector<DivyData> divyBikesSample;
+    vector<DivyData> divyBikesAll;
+    vector<DivyData> SeptemberBikes;
 
     int i, option, number;
+    DivyData trial;
     i = number = option = 0;
     cout << "Analyze Divvy bike ride information using September "
             "trip data.\nFirst select option 1 to read and clean the data.\n\n";
@@ -88,7 +149,7 @@ int main()
         }
 
         switch(option){
-            case 1: readAndClean(divyBikesAll, divyBikesSample);
+            case 1: readAndClean(divyBikesSample, divyBikesAll, SeptemberBikes);
                 number = 1;
                 break;
             case 2: displayTripData();
