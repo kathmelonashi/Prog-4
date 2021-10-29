@@ -1,10 +1,10 @@
+#include <iomanip>
 #include <iostream>
 #include <fstream> // For file input and output
 #include <vector> // Input file is stored in a vector
 #include <cassert> // For the assert statement used to validate file open
 #include <string>
 #include <math.h>
-#include <iomanip>
 /*
 #include <iomanip>
 #include <cstdlib> // for malloc()
@@ -30,22 +30,28 @@ private:
 public:
     DivyData();
     void setUpStrings(string ID, string type, string tS, string tE, string LocS, string LocE, string member);
-    double setUpDoubles(double LatS, double LongS, double LatE, double LongE);
+    void setUpDoubles(double LatS, double LongS, double LatE, double LongE);
     void printTrial();
+    string getMembership();
     double getLatS();
     double getLongS();
     double getLatE();
     double getLongE();
-    string getMembership();
-
 };
 
+string DivyData::getMembership() {return this->membership;}
+
+double DivyData::getLatS() {return this->LatitudeStart;}
+
+double DivyData::getLongS() {return this->LongitutdeStart;}
+
+double DivyData::getLatE() {return this->LatitudEnd;}
+
+double DivyData::getLongE() {return this->LongitutdeEnd;}
 
 void DivyData::printTrial() {
-    cout << this->bikeNumber << " " << this->membership << endl;
+    cout << this->bikeNumber << " " << this->timeStart;
 }
-
-string DivyData::getMembership() {return this->membership;}
 
 DivyData::DivyData(){
     this->bikeNumber = "NoName";
@@ -71,29 +77,12 @@ void DivyData::setUpStrings(string ID, string type, string tS, string tE, string
     this->membership = member;
 }
 
-double DivyData::setUpDoubles(double LatS, double LongS, double LatE, double LongE) {
+void DivyData::setUpDoubles(double LatS, double LongS, double LatE, double LongE) {
     this->LatitudeStart = LatS;
     this->LongitutdeStart = LongS;
     this->LatitudEnd = LatE;
     this->LongitutdeEnd = LongE;
 }
-
-double DivyData::getLatS() {
-    return LatitudeStart;
-}
-
-double DivyData::getLongS() {
-    return LongitutdeStart;
-}
-
-double DivyData::getLatE() {
-    return LatitudEnd;
-}
-
-double DivyData::getLongE() {
-    return LongitutdeEnd;
-}
-
 
 long double toRadians(const long double degree)
 {
@@ -165,15 +154,15 @@ int fixLine(string Line, DivyData &bike, int &number, int &numberclean){
     return 0;
 }
 
-
-
-void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes){
+int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes,
+                 int &sD, int &aD, int &SD){
     DivyData bike;
     int badLine;
     int option = 0;
     string line;
     int number = 0;
     int numberclean = 0;
+
     cout << "Select datafile:\n   1. Small subset of data with 14 rides to help create your program\n"
             "   2. Week day vs weekend rides\n   3. All September 2021 data (not tested in Zybooks)\n"
             "Your selection-->";
@@ -188,46 +177,80 @@ void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikes
         inStream.open("all_divvy_rides_september.csv");  // Open dictionary words file
     }
     assert( inStream.fail() == false);   // Ensure file open worked
-
-    while ( getline(inStream, line)){   //While there is another word to be read
-
-        badLine = fixLine(line, bike, number, numberclean);
-        if(option==1 && badLine == 0 ){
-
-
-            divyBikesSample.push_back(bike);
-        }else if(option==2 && badLine==0){
-
-            divyBikesAll.push_back(bike);
-        }else if(option==3 && badLine==0){
-            SeptemberBikes.push_back(bike);
+    if(option==1 && divyBikesSample.size()==0){
+        while ( getline(inStream, line)){   //While there is another word to be read
+            badLine = fixLine(line, bike, number, numberclean);
+            if(option==1 && badLine == 0 ){
+                divyBikesSample.push_back(bike);
+            }
         }
-    }inStream.close(); // Close the dictionary words file
+    }else if(option==2 && badLine==0){
+        while ( getline(inStream, line)){   //While there is another word to be read
+            badLine = fixLine(line, bike, number,numberclean);
+            if(badLine==0){
+                divyBikesAll.push_back(bike);
+            }
+        }
+    }else if(option==3 && SeptemberBikes.size()==0){
+        while ( getline(inStream, line)){   //While there is another word to be read
+            badLine = fixLine(line, bike, number, numberclean);
+            if(badLine==0){
+                SeptemberBikes.push_back(bike);
+            }
+        }
+    }
+    inStream.close(); // Close the dictionary words file
+
     cout << "Total # of trips found in datafile: " << number << endl;
     cout << "Total # of trips in clean data: " << numberclean << endl;
+    return 1;
 }
 
-double displayTripData(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes){
-
-    DivyData bike;
-
-    double miles = 0 ;
+void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
 
 
-    for(int i = 0; i < divyBikesSample.size(); i++)
-    {
-        miles = miles + distance(bike.getLatS(), bike.getLongS(), bike.getLatE(), bike.getLongE());
+    DivyData curr;
+    double miles = 0;
+    bool is = false;
+    cout << distance(41.89675,-87.63089,41.902973,-87.63128) << endl;
+
+    switch (vectorNumber) {
+        case 1:
+            //distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
+            for(int i=0; i<divyBikesSample.size(); i++){
+                curr = divyBikesSample.at(i);
+                if(!is)
+                {
+                    cout << distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
+                }
+
+
+            }
+            break;
+        case 2:
+            for(int i=0; i<divyBikesAll.size(); i++){
+                curr = divyBikesAll.at(i);
+                if(!is)
+                {
+                    cout << distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
+                }
+
+            }
+            break;
+        case 3:
+            for(int i=0; i<SeptemberBikes.size(); i++){
+                curr = SeptemberBikes.at(i);
+                if(!is)
+                {
+                    cout << distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
+                }
+
+
+            }
+            break;
+        default: return;
     }
 
-    cout << "Total # of miles traveled:" << distance(bike.getLatS(), bike.getLongS(), bike.getLatE(), bike.getLongE()) << endl;
-    cout << "Average length of trips in miles: " << endl << endl;
-
-
-    cout << "Longest trip information below: " << endl << "-------------------------------" << endl;
-    cout << "Trip ID: "   << endl;
-    cout << "Trip start location: " << endl;
-    cout << "Trip end location: " << endl;
-    cout << "Trip distance in miles: " << endl << endl << endl;
 
 }
 
@@ -268,17 +291,13 @@ void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<D
     }
 }
 
-
-void displayWeekUsage(){
-
-    DivyData bike;
+void displayWeekUsage(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
     int option;
-    cout << "Select type of display: " << endl;
-    cout << "1. Counts of rides per hour in the day\n2. Proportional 50 column graph with @ for weekday and + for weekend" << endl;
-    cout << "Your selection--> " << endl;
+    cout << "Select type of display: \n"
+            "      1. Counts of rides per hour in the day\n"
+            "      2. Proportional 50 column graph with @ for weekday and + for weekend\n"
+            "   Your selection-->";
     cin >> option;
-    cout << endl;
-
 
 }
 
@@ -291,19 +310,17 @@ int main()
     vector<DivyData> divyBikesSample;
     vector<DivyData> divyBikesAll;
     vector<DivyData> SeptemberBikes;
-    string word;
-    int i, option, number, miles;
-    DivyData trial;
-    i = number = option = 0;
-    int vectorNumber, sampleDone, allDone, septDone;
+
+    int i, option, number, vectorNumber, sampleDone, allDone, septDone;
     i = number = option = vectorNumber = sampleDone = allDone = septDone = 0;
+
     cout << "Analyze Divvy bike ride information using September "
             "trip data.\nFirst select option 1 to read and clean the data.\n\n";
     while(option!=6){
         cout << "Select a menu option:\n   1. Select datafile, display"
                 "rides totals and clean data\n   2. Display overall trip information\n   3. Display percentage"
                 " of members vs. casual riders\n   4. Display weekday vs weekend usage\n   5. Extra Credit:"
-                " find closest station\n   6. Exit\nYour choice --> ";
+                " find closest station\n   6. Exit\nYour choice -->";
         cin >> option;
 
         if(option!=1 && number==0){
@@ -312,17 +329,18 @@ int main()
         }
 
         switch(option){
-            case 1: readAndClean(divyBikesSample, divyBikesAll, SeptemberBikes);
-                number = 1;
+            case 1: number++;
+                vectorNumber = readAndClean(divyBikesSample, divyBikesAll, SeptemberBikes, sampleDone, allDone, septDone);
                 break;
-            case 2: displayTripData(divyBikesSample, divyBikesAll, SeptemberBikes);
+            case 2: displayTripData(vectorNumber, divyBikesSample, divyBikesAll, SeptemberBikes);
                 break;
             case 3: displayMembers(vectorNumber, divyBikesSample, divyBikesAll, SeptemberBikes);
                 break;
-            case 4: displayWeekUsage();
+            case 4: displayWeekUsage(vectorNumber, divyBikesSample, divyBikesAll, SeptemberBikes);
                 break;
             case 5: findClosestStation();
                 break;
+            default: return 0;
         }
     }
 }
