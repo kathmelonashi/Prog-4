@@ -1,4 +1,4 @@
-
+#include <iomanip>
 #include <iostream>
 #include <fstream> // For file input and output
 #include <vector> // Input file is stored in a vector
@@ -31,10 +31,13 @@ class DivyData{
         void setUpStrings(string ID, string type, string tS, string tE, string LocS, string LocE, string member);
         void setUpDoubles(double LatS, double LongS, double LatE, double LongE);
         void printTrial();
+        string getMembership();
 };
 
+string DivyData::getMembership() {return this->membership;}
+
 void DivyData::printTrial() {
-    cout << this->bikeNumber << " " << this->LatitudeStart << endl;
+    cout << this->bikeNumber << " " << this->timeStart;
 }
 
 DivyData::DivyData(){
@@ -67,6 +70,7 @@ void DivyData::setUpDoubles(double LatS, double LongS, double LatE, double LongE
     this->LatitudEnd = LatE;
     this->LongitutdeEnd = LongE;
 }
+
 
 int fixLine(string Line, DivyData &bike){
     int end;
@@ -101,7 +105,8 @@ int fixLine(string Line, DivyData &bike){
     return 0;
 }
 
-void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes){
+int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes,
+                    int &sD, int &aD, int &SD){
     DivyData bike;
     int badLine;
     int option = 0;
@@ -121,29 +126,81 @@ void readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikes
             inStream.open("all_divvy_rides_september.csv");  // Open dictionary words file
         }
         assert( inStream.fail() == false);   // Ensure file open worked
-        
-        while ( getline(inStream, line)){   //While there is another word to be read
-            badLine = fixLine(line, bike);
-            if(option==1 && badLine==0){
-                divyBikesSample.push_back(bike);
-            }else if(option==2 && badLine==0){
-                divyBikesAll.push_back(bike);
-            }else if(option==3 && badLine==0){
-                SeptemberBikes.push_back(bike);
+        if(option==1 && divyBikesSample.size()==0){
+            while ( getline(inStream, line)){   //While there is another word to be read
+                badLine = fixLine(line, bike);
+                if(badLine==0){
+                    divyBikesSample.push_back(bike);
+                }
             }
-        }inStream.close(); // Close the dictionary words file
+        }else if(option==2 && divyBikesAll.size()==0){
+                while ( getline(inStream, line)){   //While there is another word to be read
+                    badLine = fixLine(line, bike);
+                    if(badLine==0){
+                        divyBikesAll.push_back(bike);
+                    }
+                }
+        }else if(option==3 && SeptemberBikes.size()==0){
+            while ( getline(inStream, line)){   //While there is another word to be read
+                badLine = fixLine(line, bike);
+                if(badLine==0){
+                    SeptemberBikes.push_back(bike);
+                }
+            }
+        }
+        inStream.close(); // Close the dictionary words file
+        return option;
 }
 
-void displayTripData(){
+void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
 
 }
 
-void displayMembers(){
+void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
+    DivyData curr;
+    double total, casuals;
+    total = casuals = 0;
 
+    switch (vectorNumber) {
+        case 1:
+            for(int i=0; i<divyBikesSample.size(); i++){
+                curr = divyBikesSample.at(i);
+                total++;
+                if(curr.getMembership()=="casual"){casuals++;}
+            }//cout << casuals << " " << total << " " << total-casuals << endl;
+            cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
+            cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+            break;
+            case 2:
+                for(int i=0; i<divyBikesAll.size(); i++){
+                    curr = divyBikesAll.at(i);
+                    total++;
+                    if(curr.getMembership()=="casual"){casuals++;}
+                }//cout << casuals << " " << total << " " << setprecision(3) << total-casuals << endl;
+                cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
+                cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+                break;
+            case 3:
+                for(int i=0; i<SeptemberBikes.size(); i++){
+                    curr = SeptemberBikes.at(i);
+                    total++;
+                    if(curr.getMembership()=="casual"){casuals++;}
+                }//cout << casuals << " " << total << " " << setprecision(3) << total-casuals << endl;
+                cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
+                cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+                break;
+            default: return;
+    }
 }
 
-void displayWeekUsage(){
-
+void displayWeekUsage(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
+    int option;
+    cout << "Select type of display: \n"
+            "      1. Counts of rides per hour in the day\n"
+            "      2. Proportional 50 column graph with @ for weekday and + for weekend\n"
+            "   Your selection-->";
+    cin >> option;
+    
 }
 
 void findClosestStation(){
@@ -156,8 +213,8 @@ int main()
     vector<DivyData> divyBikesAll;
     vector<DivyData> SeptemberBikes;
 
-    int i, option, number;
-    i = number = option = 0;
+    int i, option, number, vectorNumber, sampleDone, allDone, septDone;
+    i = number = option = vectorNumber = sampleDone = allDone = septDone = 0;
 
     cout << "Analyze Divvy bike ride information using September "
             "trip data.\nFirst select option 1 to read and clean the data.\n\n";
@@ -174,17 +231,18 @@ int main()
         }
 
         switch(option){
-            case 1: readAndClean(divyBikesSample, divyBikesAll, SeptemberBikes);
-                number = 1;
+            case 1: number++;
+                vectorNumber = readAndClean(divyBikesSample, divyBikesAll, SeptemberBikes, sampleDone, allDone, septDone);
                 break;
-            case 2: displayTripData();
+            case 2: displayTripData(vectorNumber, divyBikesSample, divyBikesAll, SeptemberBikes);
                 break;
-            case 3: displayMembers();
+            case 3: displayMembers(vectorNumber, divyBikesSample, divyBikesAll, SeptemberBikes);
                 break;
-            case 4: displayWeekUsage();
+            case 4: displayWeekUsage(vectorNumber, divyBikesSample, divyBikesAll, SeptemberBikes);
                 break;
             case 5: findClosestStation();
                 break;
+            default: return 0;
         }
     }
 }
