@@ -164,8 +164,7 @@ int fixLine(string Line, DivyData &bike, int &number, int &numberclean){
     return 0;
 }
 
-int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes,
-                 int &sD, int &aD, int &SD){
+int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesAll, vector<DivyData> &SeptemberBikes, int &sD, int &aD, int &SD){
     DivyData bike;
     int badLine;
     int option = 0;
@@ -213,7 +212,7 @@ int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesA
 
     cout << "Total # of trips found in datafile: " << number << endl;
     cout << "Total # of trips in clean data: " << numberclean << endl;
-    return 1;
+    return option;
 }
 
 void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
@@ -225,12 +224,12 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
     string start, end, ID;
 
 
+   // vectorNumber = 2;
     switch (vectorNumber) {
         case 1:
             for(int i=0; i<divyBikesSample.size(); i++){
 
                 curr = divyBikesSample.at(i);
-                //cout << distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()) << " ";
                 miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
                 if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()))
@@ -241,9 +240,7 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
                     ID = curr.getID();
                 }
 
-
             }
-
             average = round(miles) / divyBikesSample.size();
             cout << endl << endl << "Total # of miles traveled: " << round(miles) << endl;
             cout << "Average length of trips in miles: " << average << endl << endl;
@@ -260,13 +257,28 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
             for(int i=0; i<divyBikesAll.size(); i++){
 
                 curr = divyBikesAll.at(i);
-
                 miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
+                if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()))
+                {
+                    max = distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
+                    start = curr.getLocS();
+                    end = curr.getLocE();
+                    ID = curr.getID();
+                }
+
             }
-            //average = round(miles) / divyBikesAll.size();
-            cout << "Total # of miles traveled: " << round(miles) << endl;
-            //cout << "Average length of trips in miles: " << average << endl;
+
+            average = round(miles) / divyBikesAll.size();
+            cout << endl << endl << "Total # of miles traveled: " << round(miles) << endl;
+            cout << "Average length of trips in miles: " << average << endl << endl;
+
+            cout << "Longest trip information below:\n-------------------------------" << endl;
+            cout << "Trip ID: " << ID << endl;
+            cout << "Trip start location: " << start << endl;
+            cout << "Trip end location: " << end << endl;
+            cout << "Trip distance in miles: " << setprecision(3) << max << endl << endl << endl;
+
             break;
         case 3:
             for(int i=0; i<SeptemberBikes.size(); i++){
@@ -275,20 +287,30 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
 
                 miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
+                if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()))
+                {
+                    max = distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
+                    start = curr.getLocS();
+                    end = curr.getLocE();
+                    ID = curr.getID();
+                }
+
             }
             average = round(miles) / SeptemberBikes.size();
-            cout << "Total # of miles traveled: " << miles << endl;
-            cout << "Average length of trips in miles: " << average << endl;
+            cout << endl << endl << "Total # of miles traveled: " << round(miles) << endl;
+            cout << "Average length of trips in miles: " << average << endl << endl;
+
+            cout << "Longest trip information below:\n-------------------------------" << endl;
+            cout << "Trip ID: " << ID << endl;
+            cout << "Trip start location: " << start << endl;
+            cout << "Trip end location: " << end << endl;
+            cout << "Trip distance in miles: " << setprecision(3) << max << endl << endl << endl;
             break;
 
 
         default:
             return;
     }
-
-
-
-
 
 }
 
