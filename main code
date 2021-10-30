@@ -37,6 +37,9 @@ public:
     double getLongS();
     double getLatE();
     double getLongE();
+    string getID();
+    string getLocS();
+    string getLocE();
 };
 
 string DivyData::getMembership() {return this->membership;}
@@ -48,6 +51,13 @@ double DivyData::getLongS() {return this->LongitutdeStart;}
 double DivyData::getLatE() {return this->LatitudEnd;}
 
 double DivyData::getLongE() {return this->LongitutdeEnd;}
+
+string DivyData::getLocS() {return this->locStart;}
+
+string DivyData::getLocE() {return this->locEnd;}
+
+string DivyData::getID() {return this->bikeNumber;}
+
 
 void DivyData::printTrial() {
     cout << this->bikeNumber << " " << this->timeStart;
@@ -211,6 +221,8 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
     DivyData curr;
     double miles = 0;
     double average = 0;
+    double max = 0;
+    string start, end, ID;
 
 
     switch (vectorNumber) {
@@ -218,13 +230,30 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
             for(int i=0; i<divyBikesSample.size(); i++){
 
                 curr = divyBikesSample.at(i);
-
+                //cout << distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()) << " ";
                 miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
+                if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()))
+                {
+                    max = distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
+                    start = curr.getLocS();
+                    end = curr.getLocE();
+                    ID = curr.getID();
+                }
+
+
             }
+
             average = round(miles) / divyBikesSample.size();
-            cout << "Total # of miles traveled: " << round(miles) << endl;
-            cout << "Average length of trips in miles: " << average<< endl;
+            cout << endl << endl << "Total # of miles traveled: " << round(miles) << endl;
+            cout << "Average length of trips in miles: " << average << endl << endl;
+
+            cout << "Longest trip information below:\n-------------------------------" << endl;
+            cout << "Trip ID: " << ID << endl;
+            cout << "Trip start location: " << start << endl;
+            cout << "Trip end location: " << end << endl;
+            cout << "Trip distance in miles: " << setprecision(2) << max << endl << endl << endl;
+
             break;
 
         case 2:
@@ -258,7 +287,7 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
     }
 
 
-    cout << "Longest trip information below:\n-------------------------------" << endl;
+
 
 
 }
