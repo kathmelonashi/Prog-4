@@ -180,13 +180,13 @@ int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesA
     if(option==1 && divyBikesSample.size()==0){
         while ( getline(inStream, line)){   //While there is another word to be read
             badLine = fixLine(line, bike, number, numberclean);
-            if(option==1 && badLine == 0 ){
+            if(badLine==0){
                 divyBikesSample.push_back(bike);
             }
         }
-    }else if(option==2 && badLine==0){
+    }else if(option==2 && divyBikesAll.size()==0){
         while ( getline(inStream, line)){   //While there is another word to be read
-            badLine = fixLine(line, bike, number,numberclean);
+            badLine = fixLine(line, bike, number, numberclean);
             if(badLine==0){
                 divyBikesAll.push_back(bike);
             }
@@ -208,48 +208,57 @@ int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesA
 
 void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
 
-
     DivyData curr;
     double miles = 0;
-    bool is = false;
-    cout << distance(41.89675,-87.63089,41.902973,-87.63128) << endl;
+    double average = 0;
+
 
     switch (vectorNumber) {
         case 1:
-            //distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
             for(int i=0; i<divyBikesSample.size(); i++){
-                curr = divyBikesSample.at(i);
-                if(!is)
-                {
-                    cout << distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
-                }
 
+                curr = divyBikesSample.at(i);
+
+                miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
             }
+            average = round(miles) / divyBikesSample.size();
+            cout << "Total # of miles traveled: " << round(miles) << endl;
+            cout << "Average length of trips in miles: " << average<< endl;
             break;
+
         case 2:
             for(int i=0; i<divyBikesAll.size(); i++){
+
                 curr = divyBikesAll.at(i);
-                if(!is)
-                {
-                    cout << distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
-                }
+
+                miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
             }
+            //average = round(miles) / divyBikesAll.size();
+            cout << "Total # of miles traveled: " << round(miles) << endl;
+            //cout << "Average length of trips in miles: " << average << endl;
             break;
         case 3:
             for(int i=0; i<SeptemberBikes.size(); i++){
+                miles = 0;
                 curr = SeptemberBikes.at(i);
-                if(!is)
-                {
-                    cout << distance(curr.getLatS(),curr.getLongS(),curr.getLongS(),curr.getLongE());
-                }
 
+                miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
             }
+            average = round(miles) / SeptemberBikes.size();
+            cout << "Total # of miles traveled: " << miles << endl;
+            cout << "Average length of trips in miles: " << average << endl;
             break;
-        default: return;
+
+
+        default:
+            return;
     }
+
+
+    cout << "Longest trip information below:\n-------------------------------" << endl;
 
 
 }
@@ -313,6 +322,7 @@ int main()
 
     int i, option, number, vectorNumber, sampleDone, allDone, septDone;
     i = number = option = vectorNumber = sampleDone = allDone = septDone = 0;
+
 
     cout << "Analyze Divvy bike ride information using September "
             "trip data.\nFirst select option 1 to read and clean the data.\n\n";
