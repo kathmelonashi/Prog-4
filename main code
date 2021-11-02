@@ -32,9 +32,37 @@ class DivyData{
         void setUpDoubles(double LatS, double LongS, double LatE, double LongE);
         void printTrial();
         string getMembership();
+        int getTime(int vectorNumber, int &weekEnd);
 };
 
 string DivyData::getMembership() {return this->membership;}
+int DivyData::getTime(int vectorNumber, int &weekEnd){
+    string hour = "00";
+    string day = "00";
+    int time;
+    if(vectorNumber==1 || vectorNumber==2){
+        day.at(0) = this->timeStart.at(2);
+        day.at(1) = this->timeStart.at(3);
+        weekEnd = ("4/"==day) ? 1:0;
+        if(this->timeStart.at(10)==':'){
+            hour.at(0) = '0';
+            hour.at(1) = this->timeStart.at(9);
+        }else{
+            hour.at(0) = (this->timeStart.at(9));
+            hour.at(1) = (this->timeStart.at(10));
+        }
+    }else if(vectorNumber==3){
+        day.at(0) = this->timeStart.at(2);
+        day.at(1) = this->timeStart.at(3);
+        if(day=="4/" || day=="5/" || day=="11" || day=="12" || day=="18" || day=="19" || day=="25" || day=="26"){
+            weekEnd = 1;
+        }
+        hour.at(0) = (this->timeStart.at(7));
+        hour.at(1) = (this->timeStart.at(8));
+    }
+    time = stoi(hour);
+    return time;
+}
 
 void DivyData::printTrial() {
     cout << this->bikeNumber << " " << this->timeStart;
@@ -71,6 +99,52 @@ void DivyData::setUpDoubles(double LatS, double LongS, double LatE, double LongE
     this->LongitutdeEnd = LongE;
 }
 
+void showGraph(int vectorNumber, vector<DivyData> sample, vector<DivyData> all, vector<DivyData> Sep, int wD[], int wED[]){
+    int number, weekEnd;
+    DivyData curr;
+
+    if(vectorNumber==1){
+        for(int i=0; i<sample.size(); i++){
+            weekEnd = 0;
+            curr = sample.at(i);
+            number = curr.getTime(vectorNumber,weekEnd);
+            for(int j=0; j<24; j++){
+                if(j==number && weekEnd==0){
+                    wD[j]++;
+                }else if(j==number && weekEnd==1){
+                    wED[j]++;
+                }
+            }
+        }
+    }else if(vectorNumber==2){
+        for(int i=0; i<all.size(); i++){
+            curr = all.at(i);
+            weekEnd = 0;
+            number = curr.getTime(vectorNumber,weekEnd);
+            for(int j=0; j<24; j++){
+                if(j==number && weekEnd==0){
+                    wD[j]++;
+                }else if(j==number && weekEnd==1){
+                    wED[j]++;
+                }
+            }
+        }
+    }
+       else if(vectorNumber==3){
+            for(int i=0; i<Sep.size(); i++){
+                curr = Sep.at(i);
+                weekEnd = 0;
+                number = curr.getTime(vectorNumber,weekEnd);
+                for(int j=0; j<24; j++){
+                    if(j==number && weekEnd==0){
+                        wD[j]++;
+                    }else if(j==number && weekEnd==1){
+                        wED[j]++;
+                    }
+                }
+            }
+       }
+   }
 
 int fixLine(string Line, DivyData &bike){
     int end;
@@ -112,9 +186,9 @@ int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesA
     int option = 0;
     string line;
 
-        cout << "Select datafile:\n   1. Small subset of data with 14 rides to help create your program\n"
-            "   2. Week day vs weekend rides\n   3. All September 2021 data (not tested in Zybooks)\n"
-            "Your selection-->";
+        cout << "   Select datafile:\n      1. Small subset of data with 14 rides to help create your program\n"
+            "      2. Week day vs weekend rides\n      3. All September 2021 data (not tested in Zybooks)\n"
+            "   Your selection-->";
         cin >> option;
 
         ifstream inStream;  // Declare an input stream for reading
@@ -147,8 +221,8 @@ int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesA
                     SeptemberBikes.push_back(bike);
                 }
             }
-        }
-        inStream.close(); // Close the dictionary words file
+        }inStream.close(); // Close the dictionary words file
+        cout << endl;
         return option;
 }
 
@@ -167,40 +241,74 @@ void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<D
                 curr = divyBikesSample.at(i);
                 total++;
                 if(curr.getMembership()=="casual"){casuals++;}
-            }//cout << casuals << " " << total << " " << total-casuals << endl;
-            cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
-            cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+            }cout << "\n   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
+            cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%\n" << endl;
             break;
             case 2:
                 for(int i=0; i<divyBikesAll.size(); i++){
                     curr = divyBikesAll.at(i);
                     total++;
                     if(curr.getMembership()=="casual"){casuals++;}
-                }//cout << casuals << " " << total << " " << setprecision(3) << total-casuals << endl;
-                cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
-                cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+                }cout << "\n   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
+                cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%\n" << endl;
                 break;
             case 3:
                 for(int i=0; i<SeptemberBikes.size(); i++){
                     curr = SeptemberBikes.at(i);
                     total++;
                     if(curr.getMembership()=="casual"){casuals++;}
-                }//cout << casuals << " " << total << " " << setprecision(3) << total-casuals << endl;
-                cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
-                cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+                }cout << "\n   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
+                cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%\n" << endl;
                 break;
             default: return;
     }
 }
 
 void displayWeekUsage(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
-    int option;
-    cout << "Select type of display: \n"
-            "      1. Counts of rides per hour in the day\n"
-            "      2. Proportional 50 column graph with @ for weekday and + for weekend\n"
+    int option=0, high=0;
+    int weekDay[24] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    int weekendDay[24] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+    cout << "   Select type of display: \n"
+            "         1. Counts of rides per hour in the day\n"
+            "         2. Proportional 50 column graph with @ for weekday and + for weekend\n"
             "   Your selection-->";
     cin >> option;
-    
+    showGraph(vectorNumber, divyBikesSample, divyBikesAll, SeptemberBikes, weekDay, weekendDay);
+    for(int j = 0; j<24; j++){
+        high = (weekDay[j]>high) ? weekDay[j]:high;
+        high = (weekendDay[j]>high && weekendDay[j]>weekDay[j]) ? weekendDay[j]:high;
+    }
+    switch (option){
+        default: break;
+
+        case 1:
+            cout << "   LargestNumberOfRides is: " << high << "\n   Rides per hour for weekday and weekend:\n";
+            for(int i=0; i<24; i++){
+                cout << setw(5) << i << ":" << setw(7) << weekDay[i] << setw(7) << weekendDay[i] << endl;
+            }cout << endl;
+            break;
+
+            case 2:
+            int space1, space2;
+            int x=0, j=0;
+            for(int i=0; i<24; i++){
+                x = 0;
+                j = 0;
+                space1 = weekDay[i] * 1.00 / high * 50;
+                space2 = weekendDay[i] * 1.00 / high * 50;
+                cout << setw(5) << i << ": ";
+                while(x<space1){
+                    cout << "@";
+                    x++;
+                }cout << endl << "       ";
+                while(j<space2){
+                    cout << "+";
+                    j++;
+                }cout << endl;
+            }cout << endl;
+            break;
+    }
 }
 
 void findClosestStation(){
