@@ -31,7 +31,6 @@ public:
     DivyData();
     void setUpStrings(string ID, string type, string tS, string tE, string LocS, string LocE, string member);
     void setUpDoubles(double LatS, double LongS, double LatE, double LongE);
-    void printTrial();
     string getMembership();
     double getLatS();
     double getLongS();
@@ -57,11 +56,6 @@ string DivyData::getLocS() {return this->locStart;}
 string DivyData::getLocE() {return this->locEnd;}
 
 string DivyData::getID() {return this->bikeNumber;}
-
-
-void DivyData::printTrial() {
-    cout << this->bikeNumber << " " << this->timeStart;
-}
 
 DivyData::DivyData(){
     this->bikeNumber = "NoName";
@@ -218,73 +212,60 @@ int readAndClean(vector<DivyData> &divyBikesSample, vector<DivyData> &divyBikesA
 void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
 
     DivyData curr;
+    DivyData curr2;
+    DivyData curr3;
     double miles = 0;
     double average = 0;
     double max = 0;
     string start, end, ID;
 
-
-   // vectorNumber = 2;
     switch (vectorNumber) {
         case 1:
             for(int i=0; i<divyBikesSample.size(); i++){
-
                 curr = divyBikesSample.at(i);
                 miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
-                if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()))
-                {
+                if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE())){
                     max = distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
                     start = curr.getLocS();
                     end = curr.getLocE();
                     ID = curr.getID();
                 }
-
             }
             average = round(miles) / divyBikesSample.size();
             cout << endl << endl << "Total # of miles traveled: " << round(miles) << endl;
             cout << "Average length of trips in miles: " << average << endl << endl;
-
             cout << "Longest trip information below:\n-------------------------------" << endl;
             cout << "Trip ID: " << ID << endl;
             cout << "Trip start location: " << start << endl;
             cout << "Trip end location: " << end << endl;
             cout << "Trip distance in miles: " << setprecision(2) << max << endl << endl << endl;
-
             break;
-
         case 2:
             for(int i=0; i<divyBikesAll.size(); i++){
-
                 curr = divyBikesAll.at(i);
                 miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
-                if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()))
-                {
+                if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE())){
                     max = distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
                     start = curr.getLocS();
                     end = curr.getLocE();
                     ID = curr.getID();
                 }
-
             }
-
             average = round(miles) / divyBikesAll.size();
-            cout << endl << endl << "Total # of miles traveled: " << round(miles) << endl;
-            cout << "Average length of trips in miles: " << average << endl << endl;
-
+            cout << endl << endl << "Total # of miles traveled: " << setprecision(6) <<  round(miles) << endl;
+            cout << "Average length of trips in miles: " << setprecision(1) << fixed << average << endl << endl;
             cout << "Longest trip information below:\n-------------------------------" << endl;
             cout << "Trip ID: " << ID << endl;
             cout << "Trip start location: " << start << endl;
             cout << "Trip end location: " << end << endl;
-            cout << "Trip distance in miles: " << setprecision(3) << max << endl << endl << endl;
-
+            cout << "Trip distance in miles: " << setprecision(1) << fixed << max << endl << endl << endl;
             break;
         case 3:
             for(int i=0; i<SeptemberBikes.size(); i++){
                 miles = 0;
                 curr = SeptemberBikes.at(i);
-
                 miles = miles + distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE());
 
                 if(max < distance(curr.getLatS(),curr.getLongS(),curr.getLatE(),curr.getLongE()))
@@ -294,26 +275,19 @@ void displayTripData(int vectorNumber, vector<DivyData> divyBikesSample, vector<
                     end = curr.getLocE();
                     ID = curr.getID();
                 }
-
             }
             average = round(miles) / SeptemberBikes.size();
-            cout << endl << endl << "Total # of miles traveled: " << round(miles) << endl;
-            cout << "Average length of trips in miles: " << average << endl << endl;
-
+            cout << endl << endl << "Total # of miles traveled: " << setprecision(6) << round(miles) << endl;
+            cout << "Average length of trips in miles: " << setprecision(6) << average << endl << endl;
             cout << "Longest trip information below:\n-------------------------------" << endl;
             cout << "Trip ID: " << ID << endl;
             cout << "Trip start location: " << start << endl;
             cout << "Trip end location: " << end << endl;
             cout << "Trip distance in miles: " << setprecision(3) << max << endl << endl << endl;
             break;
-
-
-        default:
-            return;
+        default:return;
     }
-
 }
-
 void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
     DivyData curr;
     double total, casuals;
@@ -326,8 +300,8 @@ void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<D
                 total++;
                 if(curr.getMembership()=="casual"){casuals++;}
             }//cout << casuals << " " << total << " " << total-casuals << endl;
-            cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
-            cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+            cout << "   Casual Rider Percentage: " << setprecision(1) << fixed  << (casuals/total)*100 << "%";
+            cout << "\n   Member Rider Percentage: " << setprecision(1) << fixed << ((total-casuals)/total)*100 << "%" << endl;
             break;
         case 2:
             for(int i=0; i<divyBikesAll.size(); i++){
@@ -335,8 +309,8 @@ void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<D
                 total++;
                 if(curr.getMembership()=="casual"){casuals++;}
             }//cout << casuals << " " << total << " " << setprecision(3) << total-casuals << endl;
-            cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
-            cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+            cout << "   Casual Rider Percentage: " << setprecision(1) << fixed  << (casuals/total)*100 << "%";
+            cout << "\n   Member Rider Percentage: "<< setprecision(1) << fixed  << ((total-casuals)/total)*100 << "%" << endl;
             break;
         case 3:
             for(int i=0; i<SeptemberBikes.size(); i++){
@@ -344,8 +318,8 @@ void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<D
                 total++;
                 if(curr.getMembership()=="casual"){casuals++;}
             }//cout << casuals << " " << total << " " << setprecision(3) << total-casuals << endl;
-            cout << "   Casual Rider Percentage: " << setprecision(3) << (casuals/total)*100 << "%";
-            cout << "\n   Member Rider Percentage: " << setprecision(3) << ((total-casuals)/total)*100 << "%" << endl;
+            cout << "   Casual Rider Percentage: " << setprecision(1) << fixed  << (casuals/total)*100 << "%";
+            cout << "\n   Member Rider Percentage: " << setprecision(1) << fixed  << ((total-casuals)/total)*100 << "%" << endl;
             break;
         default: return;
     }
@@ -353,11 +327,37 @@ void displayMembers(int vectorNumber, vector<DivyData> divyBikesSample, vector<D
 
 void displayWeekUsage(int vectorNumber, vector<DivyData> divyBikesSample, vector<DivyData> divyBikesAll, vector<DivyData> SeptemberBikes){
     int option;
+    int largestNumber = 0;
+    DivyData curr;
     cout << "Select type of display: \n"
             "      1. Counts of rides per hour in the day\n"
             "      2. Proportional 50 column graph with @ for weekday and + for weekend\n"
             "   Your selection-->";
     cin >> option;
+
+    switch (option) {
+
+        case 1:
+            switch (vectorNumber) {
+                case 1:
+                    for(int i=0; i<divyBikesSample.size(); i++) {
+                        curr = divyBikesSample.at(i);
+
+                        cout << "LargestNumberOfRides is: ";
+                    }
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default: return;
+
+            }
+        break;
+        case 2:
+        break;
+        default:return;
+    }
 
 }
 
@@ -373,7 +373,6 @@ int main()
 
     int i, option, number, vectorNumber, sampleDone, allDone, septDone;
     i = number = option = vectorNumber = sampleDone = allDone = septDone = 0;
-
 
     cout << "Analyze Divvy bike ride information using September "
             "trip data.\nFirst select option 1 to read and clean the data.\n\n";
